@@ -1,103 +1,138 @@
-import Image from "next/image";
+import { docs, meta } from "@/.source";
+import { BlogCard } from "@/components/blog-card";
+import { FlickeringGrid } from "@/components/magicui/flickering-grid";
+import { TagFilter } from "@/components/tag-filter";
+import { loader } from "fumadocs-core/source";
+import { createMDXSource } from "fumadocs-mdx";
+import { Suspense } from "react";
 
-export default function Home() {
+interface BlogData {
+  title: string;
+  description: string;
+  date: string;
+  tags?: string[];
+  featured?: boolean;
+  readTime?: string;
+  author?: string;
+  authorImage?: string;
+  thumbnail?: string;
+}
+
+interface BlogPage {
+  url: string;
+  data: BlogData;
+}
+
+const blogSource = loader({
+  baseUrl: "/blog",
+  source: createMDXSource(docs, meta),
+});
+
+const formatDate = (date: Date): string => {
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
+
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tag?: string }>;
+}) {
+  const resolvedSearchParams = await searchParams;
+  const allPages = blogSource.getPages() as BlogPage[];
+  const sortedBlogs = allPages.sort((a, b) => {
+    const dateA = new Date(a.data.date).getTime();
+    const dateB = new Date(b.data.date).getTime();
+    return dateB - dateA;
+  });
+
+  const allTags = [
+    "All",
+    ...Array.from(
+      new Set(sortedBlogs.flatMap((blog) => blog.data.tags || []))
+    ).sort(),
+  ];
+
+  const selectedTag = resolvedSearchParams.tag || "All";
+  const filteredBlogs =
+    selectedTag === "All"
+      ? sortedBlogs
+      : sortedBlogs.filter((blog) => blog.data.tags?.includes(selectedTag));
+
+  const tagCounts = allTags.reduce((acc, tag) => {
+    if (tag === "All") {
+      acc[tag] = sortedBlogs.length;
+    } else {
+      acc[tag] = sortedBlogs.filter((blog) =>
+        blog.data.tags?.includes(tag)
+      ).length;
+    }
+    return acc;
+  }, {} as Record<string, number>);
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <div className="min-h-screen bg-background relative">
+      <div className="absolute top-0 left-0 z-0 w-full h-[200px] [mask-image:linear-gradient(to_top,transparent_25%,black_95%)]">
+        <FlickeringGrid
+          className="absolute top-0 left-0 size-full"
+          squareSize={4}
+          gridGap={6}
+          color="#6B7280"
+          maxOpacity={0.2}
+          flickerChance={0.05}
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      </div>
+      <div className="p-6 border-b border-border flex flex-col gap-6 min-h-[250px] justify-center relative z-10">
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="flex flex-col gap-2">
+            <h1 className="font-medium text-4xl md:text-5xl tracking-tighter">
+              Better Call Blog
+            </h1>
+            <p className="text-muted-foreground text-sm md:text-base lg:text-lg">
+              Latest news and updates!
+            </p>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        {allTags.length > 0 && (
+          <div className="max-w-7xl mx-auto w-full">
+            <TagFilter
+              tags={allTags}
+              selectedTag={selectedTag}
+              tagCounts={tagCounts}
+            />
+          </div>
+        )}
+      </div>
+
+      <div className="max-w-7xl mx-auto w-full px-6 lg:px-0">
+        <Suspense fallback={<div>Loading articles...</div>}>
+          <div
+            className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 relative overflow-hidden border-x border-border ${
+              filteredBlogs.length < 4 ? "border-b" : "border-b-0"
+            }`}
+          >
+            {filteredBlogs.map((blog) => {
+              const date = new Date(blog.data.date);
+              const formattedDate = formatDate(date);
+
+              return (
+                <BlogCard
+                  key={blog.url}
+                  url={blog.url}
+                  title={blog.data.title}
+                  description={blog.data.description}
+                  date={formattedDate}
+                  thumbnail={blog.data.thumbnail}
+                  showRightBorder={filteredBlogs.length < 3}
+                />
+              );
+            })}
+          </div>
+        </Suspense>
+      </div>
     </div>
   );
 }
