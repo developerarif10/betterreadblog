@@ -14,7 +14,7 @@ import post from "./sanity/schemaTypes/post";
 export default defineConfig({
   basePath: "/studio",
   name: "default",
-  title: "Better Call Blog",
+  title: "SquareBlog",
 
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
