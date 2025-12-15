@@ -1,7 +1,4 @@
-import { createMDX } from "fumadocs-mdx/next";
 import type { NextConfig } from "next";
-
-const withMDX = createMDX();
 
 const nextConfig: NextConfig = {
   transpilePackages: ["geist"],
@@ -15,4 +12,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withMDX(nextConfig);
+export default nextConfig;

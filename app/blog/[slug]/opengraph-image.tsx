@@ -1,8 +1,6 @@
-import { ImageResponse } from "next/og";
-import { docs, meta } from "@/.source";
-import { loader } from "fumadocs-core/source";
-import { createMDXSource } from "fumadocs-mdx";
 import { getAuthor, isValidAuthor, type AuthorKey } from "@/lib/authors";
+import { client } from "@/lib/sanity";
+import { ImageResponse } from "next/og";
 
 export const runtime = "nodejs";
 export const alt = "Blog Post";
@@ -11,11 +9,6 @@ export const size = {
   height: 630,
 };
 export const contentType = "image/png";
-
-const blogSource = loader({
-  baseUrl: "/blog",
-  source: createMDXSource(docs, meta),
-});
 
 const getAssetData = async (authorAvatar?: string) => {
   try {
@@ -166,16 +159,19 @@ const styles = {
 
 export default async function Image({ params }: { params: { slug: string } }) {
   try {
-    const page = await blogSource.getPage([params.slug]);
+    const page = await client.fetch(
+      `*[_type == "post" && slug.current == $slug][0]`,
+      { slug: params.slug }
+    );
 
     if (!page) {
       return new Response("Blog post not found", { status: 404 });
     }
 
-    const authorKey = page.data.author as string;
+    const authorName = page.author?.name;
     const authorDetails =
-      authorKey && isValidAuthor(authorKey)
-        ? getAuthor(authorKey as AuthorKey)
+      authorName && isValidAuthor(authorName as AuthorKey)
+        ? getAuthor(authorName as AuthorKey)
         : null;
 
     const assetData = await getAssetData(authorDetails?.avatar);
@@ -190,60 +186,58 @@ export default async function Image({ params }: { params: { slug: string } }) {
     };
 
     return new ImageResponse(
-      (
-        <div
-          style={{
-            ...styles.wrapper,
-            fontFamily: assetData ? "Clash Display" : "system-ui",
-          }}
-        >
-          <div style={styles.container}>
-            <div style={styles.titleContainer}>
-              <img
-                src={
-                  assetData?.logoBase64 ||
-                  `${process.env.NEXT_PUBLIC_SITE_URL}/magicui-logo.png`
-                }
-                alt="MagicUI Logo"
-                width={80}
-                height={80}
-                style={styles.logo}
-              />
-              <h1 style={styles.title}>{page.data.title}</h1>
-              {page.data.description && (
-                <p style={styles.summary}>{page.data.description}</p>
-              )}
-            </div>
-            <div style={styles.metaContainer}>
-              {authorDetails && (
-                <div style={{ ...styles.metaBase, ...styles.authorMeta }}>
-                  {(assetData?.authorAvatarBase64 || authorDetails.avatar) && (
-                    <img
-                      src={
-                        assetData?.authorAvatarBase64 ||
-                        `${process.env.NEXT_PUBLIC_SITE_URL}${authorDetails.avatar}`
-                      }
-                      alt={authorDetails.name}
-                      width={32}
-                      height={32}
-                      style={styles.authorAvatar}
-                    />
-                  )}
-                  <span>{authorDetails.name}</span>
-                </div>
-              )}
-              {authorDetails && page.data.date && (
-                <span style={styles.dotSeparator}>•</span>
-              )}
-              {page.data.date && (
-                <p style={{ ...styles.metaBase, ...styles.dateMeta }}>
-                  {formatDate(page.data.date)}
-                </p>
-              )}
-            </div>
+      <div
+        style={{
+          ...styles.wrapper,
+          fontFamily: assetData ? "Clash Display" : "system-ui",
+        }}
+      >
+        <div style={styles.container}>
+          <div style={styles.titleContainer}>
+            <img
+              src={
+                assetData?.logoBase64 ||
+                `${process.env.NEXT_PUBLIC_SITE_URL}/magicui-logo.png`
+              }
+              alt="MagicUI Logo"
+              width={80}
+              height={80}
+              style={styles.logo}
+            />
+            <h1 style={styles.title}>{page.title}</h1>
+            {page.description && (
+              <p style={styles.summary}>{page.description}</p>
+            )}
+          </div>
+          <div style={styles.metaContainer}>
+            {authorDetails && (
+              <div style={{ ...styles.metaBase, ...styles.authorMeta }}>
+                {(assetData?.authorAvatarBase64 || authorDetails.avatar) && (
+                  <img
+                    src={
+                      assetData?.authorAvatarBase64 ||
+                      `${process.env.NEXT_PUBLIC_SITE_URL}${authorDetails.avatar}`
+                    }
+                    alt={authorDetails.name}
+                    width={32}
+                    height={32}
+                    style={styles.authorAvatar}
+                  />
+                )}
+                <span>{authorDetails.name}</span>
+              </div>
+            )}
+            {authorDetails && page.publishedAt && (
+              <span style={styles.dotSeparator}>•</span>
+            )}
+            {page.publishedAt && (
+              <p style={{ ...styles.metaBase, ...styles.dateMeta }}>
+                {formatDate(page.publishedAt)}
+              </p>
+            )}
           </div>
         </div>
-      ),
+      </div>,
       {
         width: size.width,
         height: size.height,

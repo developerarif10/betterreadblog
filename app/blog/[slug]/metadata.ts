@@ -1,13 +1,6 @@
-import { Metadata } from "next";
-import { docs, meta } from "@/.source";
-import { loader } from "fumadocs-core/source";
-import { createMDXSource } from "fumadocs-mdx";
+import { client } from "@/lib/sanity";
 import { siteConfig } from "@/lib/site";
-
-const blogSource = loader({
-  baseUrl: "/blog",
-  source: createMDXSource(docs, meta),
-});
+import { Metadata } from "next";
 
 export async function generateMetadata({
   params,
@@ -24,7 +17,10 @@ export async function generateMetadata({
       };
     }
 
-    const page = blogSource.getPage([slug]);
+    const page = await client.fetch(
+      `*[_type == "post" && slug.current == $slug][0]`,
+      { slug }
+    );
 
     if (!page) {
       return {
@@ -37,11 +33,11 @@ export async function generateMetadata({
     const ogImage = `${ogUrl}/opengraph-image`;
 
     return {
-      title: page.data.title,
-      description: page.data.description,
+      title: page.title,
+      description: page.description,
       keywords: [
-        page.data.title,
-        ...(page.data.tags || []),
+        page.title,
+        ...(page.tags || []),
         "Blog",
         "Article",
         "Web Development",
@@ -51,11 +47,11 @@ export async function generateMetadata({
       ],
       authors: [
         {
-          name: page.data.author || "Magic UI",
+          name: page.author?.name || "Magic UI",
           url: siteConfig.url,
         },
       ],
-      creator: page.data.author || "Magic UI",
+      creator: page.author?.name || "Magic UI",
       publisher: "Magic UI",
       robots: {
         index: true,
@@ -69,28 +65,28 @@ export async function generateMetadata({
         },
       },
       openGraph: {
-        title: page.data.title,
-        description: page.data.description,
+        title: page.title,
+        description: page.description,
         type: "article",
         url: ogUrl,
-        publishedTime: page.data.date,
-        authors: [page.data.author || "Magic UI"],
-        tags: page.data.tags,
+        publishedTime: page.publishedAt,
+        authors: [page.author?.name || "Magic UI"],
+        tags: page.tags,
         images: [
           {
-            url: page.data.thumbnail || ogImage,
+            url: page.thumbnail?.asset?.url || ogImage,
             width: 1200,
             height: 630,
-            alt: page.data.title,
+            alt: page.title,
           },
         ],
         siteName: siteConfig.name,
       },
       twitter: {
         card: "summary_large_image",
-        title: page.data.title,
-        description: page.data.description,
-        images: [page.data.thumbnail || ogImage],
+        title: page.title,
+        description: page.description,
+        images: [page.thumbnail?.asset?.url || ogImage],
         creator: "@dillionverma",
         site: "@dillionverma",
       },
