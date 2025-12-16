@@ -14,11 +14,60 @@ import { MobileTableOfContents } from "@/components/mobile-toc";
 // Import Author Logic
 import { getAuthor, isValidAuthor } from "@/lib/authors";
 
+import { siteConfig } from "@/lib/site";
+import { Metadata, ResolvingMetadata } from "next";
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
 export const revalidate = 60;
+
+export async function generateMetadata(
+  { params }: PageProps,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const { slug } = await params;
+
+  const query = `*[_type == "post" && slug.current == $slug][0] {
+    title,
+    description,
+    thumbnail,
+    publishedAt
+  }`;
+
+  const post = await client.fetch(query, { slug });
+
+  if (!post) {
+    return {
+      title: "Post Not Found",
+    };
+  }
+
+  const previousImages = (await parent).openGraph?.images || [];
+  const ogImage = post.thumbnail
+    ? urlFor(post.thumbnail).width(1200).height(630).url()
+    : null;
+
+  return {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      type: "article",
+      publishedTime: post.publishedAt,
+      url: `${siteConfig.url}/blog/${slug}`,
+      images: ogImage ? [ogImage, ...previousImages] : previousImages,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.description,
+      images: ogImage ? [ogImage] : [],
+    },
+  };
+}
 
 export default async function BlogPost({ params }: PageProps) {
   const { slug } = await params;
@@ -47,8 +96,26 @@ export default async function BlogPost({ params }: PageProps) {
     day: "numeric",
   });
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.description,
+    image: post.thumbnail ? urlFor(post.thumbnail).url() : undefined,
+    datePublished: post.publishedAt,
+    author: {
+      "@type": "Person",
+      name: authorData?.name || post.author || "Squareblog Team",
+    },
+    url: `${siteConfig.url}/blog/${slug}`,
+  };
+
   return (
     <div className="min-h-screen bg-background relative selection:bg-foreground selection:text-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <HashScrollHandler />
       
       {/* Header Section */}
