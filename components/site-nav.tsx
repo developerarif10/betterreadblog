@@ -13,14 +13,14 @@ export function SiteNav() {
           >
             <div className="relative h-8 w-32">
                 <Image 
-                    src="/logo-light.png" 
+                    src="/logo-dark.webp" 
                     alt="Squareblog" 
                     fill 
                     className="object-contain dark:hidden" 
                     priority
                 />
                 <Image 
-                    src="/logo-dark.png" 
+                    src="/logo-light.webp" 
                     alt="Squareblog" 
                     fill 
                     className="object-contain hidden dark:block" 
