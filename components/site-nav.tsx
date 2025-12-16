@@ -1,21 +1,32 @@
-/* eslint-disable @next/next/no-img-element */
-import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
+import Image from "next/image";
+import Link from "next/link";
 
 export function SiteNav() {
   return (
-    <header className="sticky top-0 z-20 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="max-w-7xl mx-auto w-full flex h-14 items-center justify-between px-6">
+    <header className="sticky top-0 z-20 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container mx-auto w-full flex h-14 items-center justify-between px-6">
         <div className="mr-4 flex">
           <Link
             href="/"
-            className="mr-6 flex items-center space-x-2 font-medium text-lg tracking-tighter h-8 w-8 rounded-md overflow-hidden"
+            className="mr-6 flex items-center space-x-2 font-bold text-xl tracking-tighter"
           >
-            <img
-              src="/magicui-logo.png"
-              alt="Magic UI"
-              className="w-10 h-10 object-cover"
-            />
+            <div className="relative h-8 w-32">
+                <Image 
+                    src="/logo-light.png" 
+                    alt="Squareblog" 
+                    fill 
+                    className="object-contain dark:hidden" 
+                    priority
+                />
+                <Image 
+                    src="/logo-dark.png" 
+                    alt="Squareblog" 
+                    fill 
+                    className="object-contain hidden dark:block" 
+                    priority
+                />
+            </div>
           </Link>
         </div>
 

@@ -1,5 +1,7 @@
 import { BlogCard } from "@/components/blog-card";
-import { FlickeringGrid } from "@/components/magicui/flickering-grid";
+import { About } from "@/components/landing/about";
+import { Categories } from "@/components/landing/categories";
+import { Hero } from "@/components/landing/hero";
 import { TagFilter } from "@/components/tag-filter";
 import { client } from "@/lib/sanity";
 import { urlFor } from "@/lib/urlFor"; // Import the helper we just made
@@ -82,64 +84,47 @@ export default async function HomePage({
   );
 
   return (
-    <div className="min-h-screen bg-background relative">
-      {/* Background Grid - Kept exactly as is */}
-      <div className="absolute top-0 left-0 z-0 w-full h-[200px] [mask-image:linear-gradient(to_top,transparent_25%,black_95%)]">
-        <FlickeringGrid
-          className="absolute top-0 left-0 size-full"
-          squareSize={4}
-          gridGap={6}
-          color="#6B7280"
-          maxOpacity={0.2}
-          flickerChance={0.05}
-        />
-      </div>
+    <div className="min-h-screen bg-background relative selection:bg-foreground selection:text-background">
+      <Hero />
+      <About />
+      <Categories />
 
-      <div className="p-6 border-b border-border flex flex-col gap-6 min-h-[250px] justify-center relative z-10">
-        <div className="max-w-7xl mx-auto w-full">
-          <div className="flex flex-col gap-2">
-            <h1 className="font-medium text-4xl md:text-5xl tracking-tighter">
-              SqaureBlog
-            </h1>
-            <p className="text-muted-foreground text-sm md:text-base lg:text-lg">
-              Latest news and updates!
-            </p>
-          </div>
-        </div>
-        {allTags.length > 0 && (
-          <div className="max-w-7xl mx-auto w-full">
-            <TagFilter
-              tags={allTags}
-              selectedTag={selectedTag}
-              tagCounts={tagCounts}
-            />
-          </div>
-        )}
-      </div>
+      <section id="latest" className="py-24 border-t border-border">
+          <div className="container mx-auto px-6 max-w-7xl">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
+                <h2 className="text-3xl font-bold tracking-tighter md:text-5xl">Latest Writings</h2>
+                {allTags.length > 0 && (
+                 <div className="w-full md:w-auto">
+                    <TagFilter
+                    tags={allTags}
+                    selectedTag={selectedTag}
+                    tagCounts={tagCounts}
+                    />
+                 </div>
+                )}
+            </div>
 
-      <div className="max-w-7xl mx-auto w-full px-6 lg:px-0">
-        <Suspense fallback={<div>Loading articles...</div>}>
-          <div
-            className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 relative overflow-hidden border-x border-border ${
-              filteredPosts.length < 4 ? "border-b" : "border-b-0"
-            }`}
-          >
-            {filteredPosts.map((post) => (
-              <BlogCard
-                key={post._id}
-                // Construct the URL structure your app expects
-                url={`/blog/${post.slug.current}`}
-                title={post.title}
-                description={post.description}
-                date={formatDate(post.publishedAt)}
-                // Convert Sanity Image Object to String URL
-                thumbnail={post.thumbnail ? urlFor(post.thumbnail).url() : ""}
-                showRightBorder={filteredPosts.length < 3}
-              />
-            ))}
+            <Suspense fallback={<div>Loading articles...</div>}>
+            <div
+                className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 relative overflow-hidden border-x border-t border-border ${
+                filteredPosts.length < 4 ? "border-b" : "border-b-0"
+                }`}
+            >
+                {filteredPosts.map((post) => (
+                <BlogCard
+                    key={post._id}
+                    url={`/blog/${post.slug.current}`}
+                    title={post.title}
+                    description={post.description}
+                    date={formatDate(post.publishedAt)}
+                    thumbnail={post.thumbnail ? urlFor(post.thumbnail).url() : ""}
+                    showRightBorder={filteredPosts.length < 3}
+                />
+                ))}
+            </div>
+            </Suspense>
           </div>
-        </Suspense>
-      </div>
+      </section>
     </div>
   );
 }
