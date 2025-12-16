@@ -1,27 +1,10 @@
-import {
-  defineConfig,
-  defineDocs,
-  frontmatterSchema,
-} from "fumadocs-mdx/config";
-import { z } from "zod";
+/**
 
-export default defineConfig({
-  lastModifiedTime: "git",
-  mdxOptions: {
-    providerImportSource: "@/mdx-components",
-  },
-});
+ * The project has been migrated to use Sanity CMS for content management.
+ * This file can be deleted if not needed for other purposes.
+ *
+ * Content is now managed through Sanity Studio at /studio
+ */
 
-export const { docs, meta } = defineDocs({
-  dir: "blog/content",
-  docs: {
-    schema: frontmatterSchema.extend({
-      date: z.string(),
-      tags: z.array(z.string()).optional(),
-      featured: z.boolean().optional().default(false),
-      readTime: z.string().optional(),
-      author: z.string().optional(),
-      thumbnail: z.string().optional(),
-    }),
-  },
-});
+export const docs = [];
+export const meta = [];

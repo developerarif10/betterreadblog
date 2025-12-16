@@ -13,7 +13,13 @@ interface SanityBlog {
   description: string;
   publishedAt: string;
   tags?: string[];
-  thumbnail?: any; // Sanity image object
+  thumbnail?: {
+    _type: string;
+    asset: {
+      _ref: string;
+      _type: string;
+    };
+  };
 }
 
 // 2. Helper to format date
@@ -74,11 +80,6 @@ export default async function HomePage({
     },
     {} as Record<string, number>
   );
-
-  // console.log(
-  //   "🔥 DEBUG: Fetched Posts from Sanity:",
-  //   JSON.stringify(posts, null, 2)
-  // );
 
   return (
     <div className="min-h-screen bg-background relative">

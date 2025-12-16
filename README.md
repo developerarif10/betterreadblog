@@ -323,7 +323,6 @@ Then reference your author in blog posts using the key (e.g., `author: "yourname
 ## 📖 Technologies Used
 
 - **Next.js 15** - React framework with App Router
-- **Fumadocs MDX** - MDX processing and components
 - **Tailwind CSS** - Utility-first CSS framework
 - **TypeScript** - Type-safe JavaScript
 - **Geist Font** - Modern typography

@@ -194,6 +194,7 @@ export default async function Image({ params }: { params: { slug: string } }) {
       >
         <div style={styles.container}>
           <div style={styles.titleContainer}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={
                 assetData?.logoBase64 ||
@@ -213,16 +214,19 @@ export default async function Image({ params }: { params: { slug: string } }) {
             {authorDetails && (
               <div style={{ ...styles.metaBase, ...styles.authorMeta }}>
                 {(assetData?.authorAvatarBase64 || authorDetails.avatar) && (
-                  <img
-                    src={
-                      assetData?.authorAvatarBase64 ||
-                      `${process.env.NEXT_PUBLIC_SITE_URL}${authorDetails.avatar}`
-                    }
-                    alt={authorDetails.name}
-                    width={32}
-                    height={32}
-                    style={styles.authorAvatar}
-                  />
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={
+                        assetData?.authorAvatarBase64 ||
+                        `${process.env.NEXT_PUBLIC_SITE_URL}${authorDetails.avatar}`
+                      }
+                      alt={authorDetails.name}
+                      width={32}
+                      height={32}
+                      style={styles.authorAvatar}
+                    />
+                  </>
                 )}
                 <span>{authorDetails.name}</span>
               </div>
