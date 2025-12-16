@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Blog - Magic UI";
+export const alt = "Blog - Squareblog";
 export const size = {
   width: 1200,
   height: 630,
@@ -15,7 +15,7 @@ const getAssetData = async () => {
     const fontUrls = {
       clashDisplay: `${baseUrl}/fonts/ClashDisplay-Semibold.ttf`,
       cabinetGrotesk: `${baseUrl}/fonts/CabinetGrotesk-Medium.ttf`,
-      logo: `${baseUrl}/magicui-logo.png`,
+      logo: `${baseUrl}/logo-white.webp`,
     };
 
     const [clashDisplayRes, cabinetGroteskRes, logoRes] = await Promise.all([

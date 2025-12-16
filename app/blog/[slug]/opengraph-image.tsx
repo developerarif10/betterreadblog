@@ -17,7 +17,7 @@ const getAssetData = async (authorAvatar?: string) => {
     const assetUrls = {
       clashDisplay: `${baseUrl}/fonts/ClashDisplay-Semibold.ttf`,
       cabinetGrotesk: `${baseUrl}/fonts/CabinetGrotesk-Medium.ttf`,
-      logo: `${baseUrl}/magicui-logo.png`,
+      logo: `${baseUrl}/logo-white.webp`,
       ...(authorAvatar && { authorAvatar: `${baseUrl}${authorAvatar}` }),
     };
 
