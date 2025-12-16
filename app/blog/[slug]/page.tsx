@@ -8,10 +8,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 // Import your existing components
-import { AuthorCard } from "@/components/author-card";
 import { HashScrollHandler } from "@/components/hash-scroll-handler";
 import { MobileTableOfContents } from "@/components/mobile-toc";
-import { PromoContent } from "@/components/promo-content";
 
 // Import Author Logic
 import { getAuthor, isValidAuthor } from "@/lib/authors";
@@ -50,51 +48,67 @@ export default async function BlogPost({ params }: PageProps) {
   });
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-screen bg-background relative selection:bg-foreground selection:text-background">
       <HashScrollHandler />
-      <div className="space-y-4 border-b border-border relative z-10">
-        <div className="max-w-7xl mx-auto flex flex-col gap-6 p-6">
-          <div className="flex flex-wrap items-center gap-3 gap-y-5 text-sm text-muted-foreground">
-            <Button variant="outline" asChild className="h-6 w-6">
-              <Link href="/">
-                <ArrowLeft className="w-4 h-4" />
-                <span className="sr-only">Back to all articles</span>
-              </Link>
-            </Button>
-            {post.tags && post.tags.length > 0 && (
-              <div className="flex flex-wrap gap-3 text-muted-foreground">
-                {post.tags.map((tag: string) => (
-                  <span
-                    key={tag}
-                    className="h-6 w-fit px-3 text-sm font-medium bg-muted text-muted-foreground rounded-md border flex items-center justify-center"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+      
+      {/* Header Section */}
+      <div className="border-b border-border">
+        <div className="max-w-3xl mx-auto px-6 py-12 md:py-20 flex flex-col gap-8">
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                 <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-muted">
+                    <Link href="/">
+                        <ArrowLeft className="w-5 h-5" />
+                        <span className="sr-only">Back</span>
+                    </Link>
+                </Button>
+                <time className="font-mono">{formattedDate}</time>
+                {post.tags && post.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                        {post.tags.map((tag: string) => (
+                        <Link 
+                            key={tag} 
+                            href={`/?tag=${tag}`}
+                            className="h-8 flex items-center px-3 rounded-lg border border-border text-sm font-medium hover:bg-muted transition-colors"
+                        >
+                            {tag}
+                        </Link>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tighter leading-tight text-pretty">
+                {post.title}
+            </h1>
+
+            {post.description && (
+                <p className="text-xl text-muted-foreground leading-relaxed text-pretty">
+                {post.description}
+                </p>
             )}
-            <time className="font-medium text-muted-foreground">
-              {formattedDate}
-            </time>
-          </div>
 
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tighter text-balance">
-            {post.title}
-          </h1>
-
-          {post.description && (
-            <p className="text-muted-foreground max-w-4xl md:text-lg md:text-balance">
-              {post.description}
-            </p>
-          )}
+            {/* Author Section - Minimal */}
+            <div className="flex items-center gap-4 pt-4 border-t border-border/40">
+                {authorData ? (
+                    <div className="flex items-center gap-3">
+                         {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={authorData.avatar} alt={authorData.name} className="w-10 h-10 rounded-full object-cover border border-border" />
+                        <div>
+                            <p className="font-semibold text-sm">{authorData.name}</p>
+                            <p className="text-xs text-muted-foreground">{authorData.position}</p>
+                        </div>
+                    </div>
+                ) : post.author ? (
+                    <p className="font-mono text-sm">Written by <span className="font-bold">{post.author}</span></p>
+                ) : null}
+            </div>
         </div>
       </div>
 
-      <div className="flex divide-x divide-border relative max-w-7xl mx-auto px-4 md:px-0 z-10">
-        <div className="absolute max-w-7xl mx-auto left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] lg:w-full h-full border-x border-border p-0 pointer-events-none" />
-        <main className="w-full p-0 overflow-hidden">
+      {/* Main Content */}
+      <main className="max-w-3xl mx-auto px-6 py-12">
           {post.thumbnail && (
-            <div className="relative w-full h-[500px] overflow-hidden object-cover border border-transparent">
+            <div className="relative w-full aspect-video mb-12 rounded-lg overflow-hidden border border-border bg-muted">
               <Image
                 src={urlFor(post.thumbnail).url()}
                 alt={post.title}
@@ -105,38 +119,17 @@ export default async function BlogPost({ params }: PageProps) {
             </div>
           )}
 
-          <div className="p-6 lg:p-10">
-            <div className="prose dark:prose-invert max-w-none prose-headings:font-semibold prose-a:no-underline prose-lg">
+          <article className="prose prose-lg dark:prose-invert max-w-none 
+            prose-headings:font-bold prose-headings:tracking-tight 
+            prose-p:leading-loose prose-p:text-muted-foreground 
+            prose-strong:text-foreground 
+            prose-a:text-foreground prose-a:underline prose-a:decoration-1 prose-a:underline-offset-4 hover:prose-a:decoration-2
+            prose-blockquote:border-l-4 prose-blockquote:border-foreground prose-blockquote:pl-6 prose-blockquote:italic
+            prose-img:rounded-lg prose-img:border prose-img:border-border">
               <PortableText value={post.body} />
-            </div>
-          </div>
-
-          <div className="mt-10">
-            {/* If ReadMoreSection crashes, comment it out temporarily. 
-                 It likely expects MDX data structure. */}
-            {/* <ReadMoreSection currentSlug={[slug]} currentTags={post.tags} /> */}
-          </div>
-        </main>
-
-        <aside className="hidden lg:block w-[350px] flex-shrink-0 p-6 lg:p-10 bg-muted/60 dark:bg-muted/20">
-          <div className="sticky top-20 space-y-8">
-            {/* THIS IS THE PART THAT WAS CRASHING - Now fixed because authorData is defined above */}
-            {authorData && <AuthorCard author={authorData} />}
-
-            {/* Fallback if author name exists but doesn't match a file key */}
-            {!authorData && post.author && (
-              <div className="p-4 border rounded bg-card">
-                <p className="font-bold text-sm text-muted-foreground">
-                  Written by {post.author}
-                </p>
-              </div>
-            )}
-
-            <PromoContent variant="desktop" />
-          </div>
-        </aside>
-      </div>
-
+          </article>
+      </main>
+      
       <MobileTableOfContents />
     </div>
   );
