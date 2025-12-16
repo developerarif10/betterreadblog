@@ -194,17 +194,7 @@ export default async function Image({ params }: { params: { slug: string } }) {
       >
         <div style={styles.container}>
           <div style={styles.titleContainer}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={
-                assetData?.logoBase64 ||
-                `${process.env.NEXT_PUBLIC_SITE_URL}/magicui-logo.png`
-              }
-              alt="MagicUI Logo"
-              width={80}
-              height={80}
-              style={styles.logo}
-            />
+            <h2 style={{ fontSize: "30px", fontWeight: "bold", marginBottom: "20px" }}>Squareblog.</h2>
             <h1 style={styles.title}>{page.title}</h1>
             {page.description && (
               <p style={styles.summary}>{page.description}</p>

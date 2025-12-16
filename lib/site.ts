@@ -1,8 +1,8 @@
 export const siteConfig = {
-  name: "BetterReadBlog",
-  url: "https://blog-magicui.vercel.app",
+  name: "Squareblog",
+  url: "https://squareblog.vercel.app",
   description:
-    "Modern React and web development tutorials, insights, and best practices.",
+    "Unfiltered thoughts. Structured chaos. A personal archive of ideas and feelings.",
 };
 
 export type SiteConfig = typeof siteConfig;

@@ -103,20 +103,12 @@ export default async function Image() {
         }}
       >
         <div style={styles.container}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={
-              assetData?.logoBase64 ||
-              `${process.env.NEXT_PUBLIC_SITE_URL}/magicui-logo.png`
-            }
-            alt="MagicUI Logo"
-            width={100}
-            height={100}
-          />
-          <h1 style={styles.title}>Blog</h1>
-          <p style={styles.description}>
-            A blog about design, development, and other things.
-          </p>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+             <h1 style={{ fontSize: "80px", fontWeight: "bold", color: "black", marginBottom: "20px" }}>Squareblog.</h1>
+             <p style={styles.description}>
+                Unfiltered thoughts. Structured chaos.
+             </p>
+          </div>
         </div>
       </div>,
       {

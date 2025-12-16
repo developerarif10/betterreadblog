@@ -1,20 +1,9 @@
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { FlickeringGrid } from "@/components/magicui/flickering-grid";
+import Link from "next/link";
 
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center w-full z-10">
-      <div className="absolute top-0 left-0 z-0 w-full h-[500px] [mask-image:linear-gradient(to_top,transparent_25%,black_95%)]">
-        <FlickeringGrid
-          className="absolute top-0 left-0 size-full"
-          squareSize={4}
-          gridGap={6}
-          color="#6B7280"
-          maxOpacity={0.5}
-          flickerChance={0.1}
-        />
-      </div>
       <div className="text-center flex flex-col gap-4 max-w-xs mx-auto relative">
         <h1 className="text-8xl font-mono font-bold drop-shadow-lg text-primary">
           404

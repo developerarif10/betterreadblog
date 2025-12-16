@@ -47,12 +47,12 @@ export async function generateMetadata({
       ],
       authors: [
         {
-          name: page.author?.name || "Magic UI",
+          name: page.author?.name || "Squareblog",
           url: siteConfig.url,
         },
       ],
-      creator: page.author?.name || "Magic UI",
-      publisher: "Magic UI",
+      creator: page.author?.name || "Squareblog",
+      publisher: "Squareblog",
       robots: {
         index: true,
         follow: true,
@@ -70,7 +70,7 @@ export async function generateMetadata({
         type: "article",
         url: ogUrl,
         publishedTime: page.publishedAt,
-        authors: [page.author?.name || "Magic UI"],
+        authors: [page.author?.name || "Squareblog"],
         tags: page.tags,
         images: [
           {
